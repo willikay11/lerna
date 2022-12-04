@@ -1,18 +1,24 @@
 import express from 'express';
-import cors from 'cors';
+import { QueryPayload } from 'simple-shared-data';
+import _ from "lodash";
 const app = express();
-
-const allowedOrigins = ['http://localhost:3000'];
-const options: cors.CorsOptions = {
-    origin: allowedOrigins
-};
-
-app.use(cors(options));
 
 const port = 3001;
 
-app.get("/data", (req, res) => {
-    res.json({ foo: "bar" });
+app.use((_req, res, next) => {
+    // Allow any website to connect
+    res.setHeader("Access-Control-Allow-Origin", "*");
+
+    // Continue to next middleware
+    next();
+});
+
+app.get("/", (_req, res) => {
+    const responseData: QueryPayload = {
+        payload: _.snakeCase("Server data returned successfully"),
+    };
+
+    res.json(responseData);
 });
 
 app.listen(port, () => {
